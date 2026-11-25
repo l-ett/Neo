@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Neo.Backend/Neo.Backend.csproj" />
+    <Project Path="src/Neo.Domain/Neo.Domain.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Neo.Domain.Tests/Neo.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

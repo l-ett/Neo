@@ -1,0 +1,8 @@
+bin/
+obj/
+TestResults/
+.vs/
+.idea/
+node_modules/
+frontend/dist/
+frontend/public/domain/

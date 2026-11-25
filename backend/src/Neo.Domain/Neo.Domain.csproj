@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+
+  <PropertyGroup>
+    <TargetFrameworks>net11.0;net11.0-browser</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0-browser'">
+    <OutputType>Exe</OutputType>
+    <!-- Non-AOT is about half the size of AOT here; see README "Bundle size". -->
+    <RunAOTCompilation>false</RunAOTCompilation>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <InvariantTimezone>true</InvariantTimezone>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+    <WasmNativeDebugSymbols>false</WasmNativeDebugSymbols>
+    <EmccLinkOptimizationFlag>-Oz</EmccLinkOptimizationFlag>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0'">
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net11.0-browser'">
+    <Compile Remove="Browser\**" />
+  </ItemGroup>
+
+  <Target Name="RemoveStaleDomainBundle" BeforeTargets="PrepareForPublish" Condition="'$(TargetFramework)' == 'net11.0-browser'">
+    <RemoveDir Directories="$(PublishDir)wwwroot" />
+  </Target>
+
+  <Target Name="CopyDomainBundleToFrontend" AfterTargets="Publish" Condition="'$(TargetFramework)' == 'net11.0-browser'">
+    <PropertyGroup>
+      <FrontendDomainDir>$(MSBuildThisFileDirectory)..\..\..\frontend\public\domain\</FrontendDomainDir>
+    </PropertyGroup>
+    <RemoveDir Directories="$(FrontendDomainDir)" />
+    <ItemGroup>
+      <DomainBundleFile Include="$(PublishDir)wwwroot\**\*" Exclude="$(PublishDir)wwwroot\**\*.br;$(PublishDir)wwwroot\**\*.gz" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DomainBundleFile)" DestinationFiles="@(DomainBundleFile->'$(FrontendDomainDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
+</Project>
